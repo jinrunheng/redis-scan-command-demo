@@ -68,7 +68,6 @@ public class RedisTest {
                 while (cursor.hasNext()) {
                     byte[] bytes = connection.get(cursor.next());
                     String value = String.valueOf(redisTemplate.getValueSerializer().deserialize(bytes));
-                    System.out.println(value);
                     set.add(value);
                 }
                 return set;
