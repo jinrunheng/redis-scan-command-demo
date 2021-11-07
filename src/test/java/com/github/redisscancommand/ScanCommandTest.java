@@ -17,7 +17,7 @@ import java.util.Map;
 
 @SpringBootTest
 @ContextConfiguration(classes = RedisScanCommandApplication.class)
-public class RedisTest {
+public class ScanCommandTest {
 
     @Resource
     @Qualifier("redisTemplate")
@@ -26,39 +26,17 @@ public class RedisTest {
 
     @Test
     public void testScan() {
-        setData(redisTemplate);
-        String pattern = "M*";
+        String pattern = "K*";
         Long limit = 1000L;
-        Map<String,String> map = scan(redisTemplate, pattern, limit);
+        Map<String, String> map = scan(redisTemplate, pattern, limit);
         System.out.println(map);
     }
 
-    private void setData(RedisTemplate redisTemplate) {
-        redisTemplate.opsForValue().set("K1", "K-1");
-        redisTemplate.opsForValue().set("K2", "K-2");
-        redisTemplate.opsForValue().set("K3", "K-3");
-        redisTemplate.opsForValue().set("K4", "K-4");
-        redisTemplate.opsForValue().set("K5", "K-5");
-        redisTemplate.opsForValue().set("K6", "K-6");
-        redisTemplate.opsForValue().set("K7", "K-7");
-        redisTemplate.opsForValue().set("K8", "K-8");
-        redisTemplate.opsForValue().set("K9", "K-9");
-        redisTemplate.opsForValue().set("M1", "V1");
-        redisTemplate.opsForValue().set("M2", "V2");
-        redisTemplate.opsForValue().set("M3", "V3");
-        redisTemplate.opsForValue().set("M4", "V4");
-        redisTemplate.opsForValue().set("M5", "V5");
-        redisTemplate.opsForValue().set("M6", "V6");
-        redisTemplate.opsForValue().set("M7", "V7");
-        redisTemplate.opsForValue().set("M8", "V8");
-        redisTemplate.opsForValue().set("M9", "V9");
-    }
-
-    private Map<String,String> scan(RedisTemplate redisTemplate, String pattern, Long limit) {
-        return (Map<String,String>) redisTemplate.execute(new RedisCallback() {
+    private Map<String, String> scan(RedisTemplate redisTemplate, String pattern, Long limit) {
+        return (Map<String, String>) redisTemplate.execute(new RedisCallback() {
             @Override
             public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                Map<String,String> map = new HashMap<>();
+                Map<String, String> map = new HashMap<>();
                 Cursor<byte[]> cursor = connection.scan(new ScanOptions
                         .ScanOptionsBuilder()
                         .match(pattern)
@@ -69,7 +47,7 @@ public class RedisTest {
                     byte[] bytesValue = connection.get(bytesKey);
                     String key = String.valueOf(redisTemplate.getKeySerializer().deserialize(bytesKey));
                     String value = String.valueOf(redisTemplate.getValueSerializer().deserialize(bytesValue));
-                    map.put(key,value);
+                    map.put(key, value);
                 }
                 return map;
             }
